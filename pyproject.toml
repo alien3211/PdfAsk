@@ -10,8 +10,8 @@ description = "Awesome `pdf_ask` is a Python cli/package created with https://gi
 readme = "README.md"
 authors = ["Alan Tetich <alan.tetich+work@gmail.com>"]
 license = "MIT"
-repository = "https://github.com/alan_tetich/pdf_ask"
-homepage = "https://github.com/alan_tetich/pdf_ask"
+repository = "https://github.com/alien3211/pdf_ask"
+homepage = "https://github.com/alien3211/pdf_ask"
 
 # Keywords description https://python-poetry.org/docs/pyproject/#keywords
 keywords = []  #! Update me
@@ -24,70 +24,129 @@ classifiers = [  #! Update me
   "Topic :: Software Development :: Libraries :: Python Modules",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.12",
 ]
 
 
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.12"
 
 [tool.poetry.dev-dependencies]
-bandit = "^1.7.1"
-black = {version = "^24.8.0", allow-prereleases = true}
-darglint = "^1.8.1"
-isort = {extras = ["colors"], version = "^5.10.1"}
-mypy = "^0.910"
+mypy = "^1.0.0"
 mypy-extensions = "^0.4.3"
-pre-commit = "^2.15.0"
-pydocstyle = "^6.1.1"
-pylint = "^2.11.1"
-pytest = "^6.2.5"
-pyupgrade = "^2.29.1"
-safety = "^1.10.3"
-coverage = "^6.1.2"
-coverage-badge = "^1.1.0"
-pytest-html = "^3.1.1"
-pytest-cov = "^3.0.0"
+pre-commit = "^2.21.0"
+bandit = "^1.7.5"
+safety = "^2.3.4"
+ruff = "^0.4.3"
+pytest = "^7.2.1"
+pytest-html = "^3.2.0"
+pytest-cov = "^4.1.0"
+pytest-mock = "^3.10.0"
+pytest-timeout = "^2.2.0"
+pytest-benchmark = "^4.0.0"
+pytest-sugar = "^0.9.7"
+pytest-pikachu = "^1.0.0"
+coverage = "^7.3.0"
 
-[tool.black]
-# https://github.com/psf/black
-target-version = ["py39"]
-line-length = 120
-color = true
+[tool.ruff]
+# https://github.com/astral-sh/ruff
+# https://docs.astral.sh/ruff/settings
+output-format = "grouped"
+show-fixes = true
+target-version = "py312"
 
-exclude = '''
-/(
-    \.git
-    | \.hg
-    | \.mypy_cache
-    | \.tox
-    | \.venv
-    | _build
-    | buck-out
-    | build
-    | dist
-    | env
-    | venv
-)/
-'''
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = 79
+skip-magic-trailing-comma = true
 
-[tool.isort]
-# https://github.com/timothycrosley/isort/
-py_version = 39
-line_length = 120
+[tool.ruff.lint]
+select = [  # UPDATEME with additional rules from https://docs.astral.sh/ruff/rules/
+  "F",
+  "E",
+  "W",
+  "I",
+  "N",
+  "D",
+  "S",
+  "B",
+  "UP",
+  "C90",
+  "T20",
+  "EM",
+  "PL",
+  "C4",
+  "PT",
+  "TD",
+  "ANN",
+  "ICN",
+  "RET",
+  "ISC",
+  "RSE",
+  "ARG",
+  "FBT",
+  "SIM",
+  "TID",
+  "PTH",
+  "TCH",
+  "FIX",
+  "BLE",
+  "ERA",
+  "TRY",
+  "FLY",
+  "YTT",
+  "CPY",
+  "RUF"
+]
+ignore = ["D200"]
+task-tags = ["TODO", "FIXME", "XXX", "UPDATEME"]  # UPDATEME by modifying or removing this setting after addressing all UPDATEMEs
 
-known_typing = ["typing", "types", "typing_extensions", "mypy", "mypy_extensions"]
-sections = ["FUTURE", "TYPING", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
-include_trailing_comma = true
-profile = "black"
-multi_line_output = 3
-indent = 4
-color_output = true
+[tool.ruff.lint.per-file-ignores]
+"tests/**.py" = ["D100", "D101", "D102", "D103", "D104", "S101"]
+"__main__.py" = ["D100", "D101"]
+
+[tool.ruff.lint.flake8-annotations]
+ignore-fully-untyped = true
+suppress-dummy-args = true
+
+[tool.ruff.lint.flake8-pytest-style]
+fixture-parentheses = false
+mark-parentheses = false
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.lint.pycodestyle]
+max-line-length = 120
+max-doc-length = 119
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+[tool.ruff.lint.flake8-copyright]
+author = "Alan Tetich"
+
+[tool.ruff.lint.pylint]
+max-bool-expr = 3
+
+[tool.ruff.lint.isort]
+split-on-trailing-comma = false
+known-first-party = ["pdf_ask"]
+sections.typing = ["typing", "types", "typing_extensions", "mypy", "mypy_extensions"]
+sections.testing = ["pytest", "tests"]
+section-order = [
+  "future",
+  "typing",
+  "standard-library",
+  "third-party",
+  "first-party",
+  "local-folder",
+  "testing"
+]
 
 [tool.mypy]
+# https://github.com/python/mypy
 # https://mypy.readthedocs.io/en/latest/config_file.html#using-a-pyproject-toml-file
-python_version = 3.9
+python_version = 3.12
 pretty = true
 show_traceback = true
 color_output = true
@@ -110,13 +169,26 @@ warn_return_any = true
 warn_unreachable = true
 warn_unused_configs = true
 warn_unused_ignores = true
+exclude = ["venv", ".venv"]
 
 
 [tool.pytest.ini_options]
+# https://github.com/pytest-dev/pytest
 # https://docs.pytest.org/en/6.2.x/customize.html#pyproject-toml
 # Directories that are not visited by pytest collector:
-norecursedirs =["hooks", "*.egg", ".eggs", "dist", "build", "docs", ".tox", ".git", "__pycache__"]
+norecursedirs =[
+  "hooks",
+  "*.egg",
+  ".eggs",
+  "dist",
+  "build",
+  "docs",
+  ".tox",
+  ".git",
+  "__pycache__"
+]
 doctest_optionflags = ["NUMBER", "NORMALIZE_WHITESPACE", "IGNORE_EXCEPTION_DETAIL"]
+timeout = 10
 
 # Extra options:
 addopts = [
@@ -124,17 +196,23 @@ addopts = [
   "--tb=short",
   "--doctest-modules",
   "--doctest-continue-on-failure",
+  "--pikachu"
 ]
+
 
 [tool.coverage.run]
 source = ["tests"]
-
-[coverage.paths]
-source = "pdf_ask"
-
-[coverage.run]
 branch = true
 
-[coverage.report]
+
+[tool.coverage.report]
+exclude_also = [
+  "def main",
+  "if __name__ == .__main__.:"
+]
 fail_under = 50
 show_missing = true
+
+
+[tool.coverage.paths]
+source = ["pdf_ask"]
