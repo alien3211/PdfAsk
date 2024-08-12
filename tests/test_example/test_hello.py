@@ -1,8 +1,8 @@
 """Tests for hello function."""
 
-import pytest
-
 from pdf_ask.example import hello
+
+import pytest
 
 
 @pytest.mark.parametrize(

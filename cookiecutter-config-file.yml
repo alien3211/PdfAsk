@@ -5,7 +5,7 @@ default_context:
   project_description: "Awesome `pdf_ask` is a Python cli/package created with https://github.com/TezRomacH/python-package-template"
   organization: "Alan Tetich"
   license: "MIT"
-  minimal_python_version: 3.9
+  minimal_python_version: 3.12
   github_name: "alan_tetich"
   email: "alan.tetich+work@gmail.com"
   version: "0.1.0"
