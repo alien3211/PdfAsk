@@ -31,6 +31,17 @@ classifiers = [  #! Update me
 
 [tool.poetry.dependencies]
 python = "^3.12"
+langchain = "^0.2.12"
+faiss-cpu = "^1.8.0.post1"
+pypdf = "^4.3.1"
+streamlit = "^1.37.1"
+python-dotenv = "^1.0.1"
+langchain-core = "^0.2.29"
+pymupdf = "^1.24.9"
+langchain-community = "^0.2.11"
+pydantic = "^2.8.2"
+langchain-text-splitters = "^0.2.2"
+langchain-openai = "^0.1.21"
 
 [tool.poetry.dev-dependencies]
 mypy = "^1.0.0"

@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+  streamlit:
+    image: streamlit-app:latest
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: final
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+#    volumes:
+#      -
+    environment:
+      - PYTHONUNBUFFERED=1
