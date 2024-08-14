@@ -19,3 +19,15 @@ class DocumentsEnum(Enum):
     SELECTED_VECTOR_STORE: str = "selected_vector_store"
     NEW_VECTOR_STORE_NAME: str = "new_vector_store_name"
     RESOURCE_PATH: str = "resource_path"
+    TEXT_SPLITER_NAME: str = "text_spliter_name"
+
+
+class ChatEnum(Enum):
+    """Document state."""
+
+    CHAT_HISTORY: str = "chat_history"
+    UPLOADED_FILES: str = "uploaded_files"
+    DOCUMENT_EMBEDDINGS_NAME: str = "document_embeddings_name"
+    SELECTED_VECTOR_STORE: str = "selected_vector_store"
+    NEW_VECTOR_STORE_NAME: str = "new_vector_store_name"
+    RESOURCE_PATH: str = "resource_path"

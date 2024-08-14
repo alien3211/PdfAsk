@@ -1,4 +1,8 @@
-TOOLTIP_STYLE = """
+import logging
+
+logger = logging.getLogger(__name__)
+
+TOOLTIP_CSS = """
 <style>
         .tooltip {
             position: relative;
@@ -38,30 +42,37 @@ TOOLTIP_STYLE = """
 """
 
 
-def _add_tooltip_style_to_markdown(text: str) -> str:
-    """Adds the tooltip style to a markdown string.
+def add_tooltip_css_to_markdown(markdown_text: str) -> str:
+    """Adds the tooltip CSS to a markdown string.
 
     Args:
-        text
+        markdown_text: str
+
+    Returns:
+        str: Markdown text with embedded tooltip CSS
     """
     return f"""
-{TOOLTIP_STYLE}
-{text}
+{TOOLTIP_CSS}
+{markdown_text}
 """
 
 
-def _add_tooltip_style_to_text(text: str, tooltip_text: str) -> str:
-    """Adds the tooltip style to a text string.
+def create_tooltip_span(text: str, tooltip_text: str) -> str:
+    """Creates a span element with tooltip styling.
 
     Args:
         text: str
         tooltip_text: str
+
+    Returns:
+        str: HTML span element with tooltip
     """
+    logger.debug(f"Creating tooltip span for text: {text} with tooltip: {tooltip_text}")
     return f'<span class="tooltip">{text}<span class="tooltiptext">{tooltip_text}</span></span>'
 
 
-def replace_with_tooltips(text: str, tooltip_map: dict[str, str]) -> str:
-    """Replaces the given items in the text with tooltips.
+def replace_text_with_tooltips(text: str, tooltip_map: dict[str, str]) -> str:
+    """Replaces specified items in the text with tooltips.
 
     Args:
         text: str - the text to add the tooltip to
@@ -70,6 +81,9 @@ def replace_with_tooltips(text: str, tooltip_map: dict[str, str]) -> str:
     Returns:
         str - the text with the appropriate tooltip spans
     """
+    logger.debug("Starting text replacement with tooltips.")
     for item, tooltip in tooltip_map.items():
-        text = text.replace(item, _add_tooltip_style_to_text(item, tooltip))
-    return _add_tooltip_style_to_markdown(text)
+        logger.debug(f"Replacing '{item}' with tooltip.")
+        text = text.replace(item, create_tooltip_span(item, tooltip))
+    logger.debug("Finished replacing text with tooltips.")
+    return add_tooltip_css_to_markdown(text)

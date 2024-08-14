@@ -1,15 +1,19 @@
+import logging
 from pathlib import Path
 
 import streamlit as st
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from pdf_ask.backend.embedding import ALLOWED_EMBEDDERS, get_embeddings
-from pdf_ask.backend.parse_document import LocalLoader
+from pdf_ask.backend.embedding import ALLOWED_EMBEDDERS, get_embedding_instance
+from pdf_ask.backend.loader import LocalLoader
+from pdf_ask.backend.spliter import ALLOWED_SPLITTER, get_text_splitter_instance
 from pdf_ask.backend.vector_store import FaissVectorStore
 from pdf_ask.frontend.session_state import DocumentsEnum, VectorStorEnum
 
+logger = logging.getLogger(__name__)
+
 
 def init_documents_session_state():
+    """Initialize the session state for documents."""
     if DocumentsEnum.LOADER_KEY.value not in st.session_state:
         st.session_state[DocumentsEnum.LOADER_KEY.value] = 0
         st.session_state[DocumentsEnum.UPLOADED_FILES.value] = []
@@ -18,11 +22,22 @@ def init_documents_session_state():
         st.session_state[DocumentsEnum.RESOURCE_PATH.value] = "resources"
 
 
-def load_vector_store(vector_store_name, file_paths, force: bool = True) -> None:
+def load_vector_store(
+    vector_store_name: str, file_paths: list, force: bool = True
+) -> None:
+    """Load files into the vector store.
+
+    Args:
+        vector_store_name (str): Name of the vector store.
+        file_paths (list): List of file paths to load.
+        force (bool): Whether to forcefully add files to the vector store.
+    """
+    logger.info(f"Loading vector store: {vector_store_name}")
     resource_path = Path(st.session_state[DocumentsEnum.RESOURCE_PATH.value])
     vector_store_path = resource_path / vector_store_name
     vector_store = create_vector_store(vector_store_name)
     for file in file_paths:
+        logger.info(f"Loading vector store: {vector_store_name}")
         bytes_data = file.read()
         file_name = vector_store_path / file.name
         with file_name.open("wb") as f:
@@ -32,20 +47,26 @@ def load_vector_store(vector_store_name, file_paths, force: bool = True) -> None
 
 
 def create_vector_store(vector_store_name):
+    """Create a vector store.
+
+    Args:
+        vector_store_name (str): Name of the vector store.
+
+    Returns:
+        FaissVectorStore: An instance of FaissVectorStore.
+    """
+    logging.info(f"Creating vector store: {vector_store_name}")
     resource_path = Path(st.session_state[DocumentsEnum.RESOURCE_PATH.value])
     vector_store_path = resource_path / vector_store_name
-    embedding = get_embeddings(
+    embedding = get_embedding_instance(
         st.session_state[DocumentsEnum.DOCUMENT_EMBEDDINGS_NAME.value]
     )
     loader = LocalLoader(
-        RecursiveCharacterTextSplitter(
-            chunk_size=250,
-            chunk_overlap=20,
-            length_function=len,
-            is_separator_regex=False,
+        get_text_splitter_instance(
+            st.session_state[DocumentsEnum.TEXT_SPLITER_NAME.value]
         )
     )
-    return FaissVectorStore(loader, embedding, vector_store_path)
+    return FaissVectorStore(loader, embedding, vector_store_path.as_posix())
 
 
 def get_files_by_extension(directory_path, extensions):
@@ -59,6 +80,7 @@ def get_files_by_extension(directory_path, extensions):
         dict: A dictionary where keys are folder names and values are dictionaries
               containing the folder path and a list of files with the specified extensions.
     """
+    logging.info(f"Getting files by extension in directory: {directory_path}")
     folder_dict = {}
     path = Path(directory_path)
     path.mkdir(exist_ok=True, parents=True)
@@ -74,10 +96,12 @@ def get_files_by_extension(directory_path, extensions):
 
 
 def loader_clear():
+    """Clear the loader by incrementing the loader key in session state."""
     st.session_state[DocumentsEnum.LOADER_KEY.value] += 1
 
 
 def loader_unload():
+    """Unload the loader by extending uploaded files in session state."""
     st.session_state[DocumentsEnum.UPLOADED_FILES.value].extend(
         st.session_state[st.session_state[DocumentsEnum.LOADER_KEY.value]]
     )
@@ -85,15 +109,26 @@ def loader_unload():
 
 
 def file_remove(index):
+    """Remove a file from uploaded files in session state by index.
+
+    Args:
+        index (int): Index of the file to remove.
+    """
     st.session_state[DocumentsEnum.UPLOADED_FILES.value].pop(index)
 
 
 def clean_document():
+    """Reset loader key and uploaded files in session state."""
     st.session_state[DocumentsEnum.LOADER_KEY.value] = 0
     st.session_state[DocumentsEnum.UPLOADED_FILES.value] = []
 
 
 def update_file_exist(dict_of_list: dict) -> None:
+    """Update uploaded files in session state based on selected vector store.
+
+    Args:
+        dict_of_list (dict): Dictionary of vector store information.
+    """
     if vector_store_info := dict_of_list.get(
         st.session_state[DocumentsEnum.SELECTED_VECTOR_STORE.value]
     ):
@@ -105,6 +140,7 @@ def update_file_exist(dict_of_list: dict) -> None:
 
 
 def show_uploaded_files():
+    """Display uploaded files with remove buttons."""
     for index, file in enumerate(st.session_state[DocumentsEnum.UPLOADED_FILES.value]):
         loaded = st.columns([3, 10])
         loaded[0].button(
@@ -124,7 +160,11 @@ def show_uploaded_files():
 
 
 def show_vector_store(vector_store_files: dict[str, list[dict[str, str]]]) -> None:
-    # List the existing vector stores
+    """Display a select box for vector stores and handle creation or update.
+
+    Args:
+        vector_store_files (dict): Dictionary of vector store files.
+    """
     vector_store_list = list(vector_store_files.keys())
     vector_store_list = ["<NEW VECTOR STORE>", *vector_store_list]
 
@@ -157,6 +197,7 @@ def show_vector_store(vector_store_files: dict[str, list[dict[str, str]]]) -> No
 
 
 def display_documents_embedding():
+    """Display the document embedding interface."""
     available_extensions = [".pdf", ".txt"]
     vector_store_files = get_files_by_extension("resources", available_extensions)
     st.session_state[VectorStorEnum.AVAILABLE_VECTOR_STORES.value] = list(
@@ -183,6 +224,11 @@ def display_documents_embedding():
                 "Model Name of the Instruct Embeddings",
                 ALLOWED_EMBEDDERS,
                 key=DocumentsEnum.DOCUMENT_EMBEDDINGS_NAME.value,
+            )
+            st.selectbox(
+                "Model Name of the Instruct Embeddings",
+                ALLOWED_SPLITTER,
+                key=DocumentsEnum.TEXT_SPLITER_NAME.value,
             )
 
         with row_1[1]:

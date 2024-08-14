@@ -1,61 +1,83 @@
-import argparse
+import logging
 
 import streamlit as st
 from dotenv import load_dotenv
+from langchain_openai import ChatOpenAI
 
-from pdf_ask.frontend.chat import chat, init_chat_session_state, reset_chat_session_state
-from pdf_ask.frontend.documents import display_documents_embedding, init_documents_session_state
+from pdf_ask.frontend.chat import (
+    chat_interface,
+    clear_chat_history,
+    init_chat_session_state,
+)
+from pdf_ask.frontend.documents import (
+    display_documents_embedding,
+    init_documents_session_state,
+)
 from pdf_ask.frontend.session_state import VectorStorEnum
 
-load_dotenv()
-from langchain.globals import set_verbose
-
-set_verbose(True)
-
-
-def parse_args():
-    parser = argparse.ArgumentParser()
-    # parser.add_argument("--config", type=str, help="Path to config file", default="config/config.yml")
-    # parser.add_argument("--reload_db", help="Reload database", action="store_true")
-
-    return parser.parse_args()
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 
 
-def display_info():
-    st.title("RAG Chatbot")
+def display_title():
+    """Display the main title of the application."""
+    st.title("Ask Your Data 🤖")
 
 
 def initialize_session_state():
+    """Initialize session state variables for chat and documents."""
     init_chat_session_state()
     init_documents_session_state()
-    if "available_vector_stores" not in st.session_state:
-        st.session_state.available_vector_stores = None
-    if "current_embedding" not in st.session_state:
-        st.session_state.current_embedding = None
+    if "openai_model" not in st.session_state:
+        st.session_state["openai_model"] = "gpt-35-turbo"
+    if "model_temperature" not in st.session_state:
+        st.session_state["model_temperature"] = 0.3
 
 
-def display_sitebar():
+def display_sidebar():
+    """Display the sidebar with options to select resources and reset conversation."""
     with st.sidebar:
         st.selectbox(
             "Select resources",
             st.session_state[VectorStorEnum.AVAILABLE_VECTOR_STORES.value],
             key=VectorStorEnum.CURRENT_VECTOR_STORE.value,
-        )  # , on_change=load_or_create_vector_store)
-    with st.sidebar:
-        st.button(
-            "Reset conversation", type="primary", on_click=reset_chat_session_state
         )
+        st.button("Reset conversation", type="primary", on_click=clear_chat_history)
+        st.selectbox("OpenAI model:", ["gpt-4o", "gpt-35-turbo"], key="openai_model")
+        st.slider("Temperature", 0.0, 1.0, 0.3, step=0.01, key="model_temperature")
 
 
-def main(args):
-    display_info()
+@st.cache_resource
+def get_llm_model(model_name, temperature):
+    """Get the language model with the specified name and temperature.
+
+    Args:
+        model_name (str): The name of the model.
+        temperature (float): The temperature setting for the model.
+
+    Returns:
+        ChatOpenAI: An instance of the ChatOpenAI model.
+    """
+    logger.info(f"Getting model {model_name} with temperature: {temperature}")
+    return ChatOpenAI(name=model_name, temperature=temperature)
+
+
+def main():
+    """Main function to run the Streamlit application."""
+    load_dotenv()
+    display_title()
     initialize_session_state()
     display_documents_embedding()
-    display_sitebar()
+    display_sidebar()
 
-    chat(None)
+    llm = get_llm_model(
+        st.session_state["openai_model"], st.session_state["model_temperature"]
+    )
+    chat_interface(llm)
 
 
 if __name__ == "__main__":
-    args = parse_args()
-    main(args)
+    main()

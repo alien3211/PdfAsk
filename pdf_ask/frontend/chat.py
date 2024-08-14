@@ -1,62 +1,100 @@
+import logging
+
 import streamlit as st
-from langchain_openai import ChatOpenAI
+from langchain_core.language_models.chat_models import BaseChatModel
 
 from pdf_ask.backend.llm import ChatMessage, Role, SimpleRAGChatBot
 from pdf_ask.frontend.documents import create_vector_store
-from pdf_ask.frontend.session_state import VectorStorEnum
-from pdf_ask.frontend.tooltip import replace_with_tooltips
+from pdf_ask.frontend.session_state import ChatEnum, VectorStorEnum
+from pdf_ask.frontend.tooltip import replace_text_with_tooltips
+
+logger = logging.getLogger(__name__)
 
 
 def init_chat_session_state():
-    # Chat history
-    if "history" not in st.session_state:
-        st.session_state.history = []
-
-    if "vector_store_dict" not in st.session_state:
-        st.session_state.vector_store_dict = {}
-
-
-def reset_chat_session_state():
-    st.session_state.history = []
+    """Initialize the chat session state by setting up the chat history."""
+    if ChatEnum.CHAT_HISTORY.value not in st.session_state:
+        st.session_state[ChatEnum.CHAT_HISTORY.value] = [
+            ChatMessage(Role.BOT, "How can I help you? 🤖")
+        ]
+        logger.info("Chat session state initialized.")
 
 
-def add_message_and_return(role, message, documents=None):
+def clear_chat_history():
+    """Clear the chat history in the session state."""
+    st.session_state[ChatEnum.CHAT_HISTORY.value] = [
+        ChatMessage(Role.BOT, "How can I help you? 🤖")
+    ]
+    logger.info("Chat history cleared.")
+
+
+def add_message(role: Role, message: str, documents: list | None = None) -> ChatMessage:
+    """Add a message to the chat history and return the ChatMessage object.
+
+    Args:
+        role (Role): The role of the message sender (USER or BOT).
+        message (str): The message content.
+        documents (list, optional): List of documents related to the message.
+
+    Returns:
+        ChatMessage: The created ChatMessage object.
+    """
     chat_message = ChatMessage(role, message, documents)
-    st.session_state.history.append(chat_message)
+    st.session_state[ChatEnum.CHAT_HISTORY.value].append(chat_message)
+    logger.info(f"Message added to chat history: {message}")
     return chat_message
 
 
 def display_chat_history():
-    for message in st.session_state.history:
+    """Display the chat history from the session state."""
+    for message in st.session_state[ChatEnum.CHAT_HISTORY.value]:
         _display_message(message)
 
 
 def _display_message(message: ChatMessage) -> None:
+    """Display a single chat message.
+
+    Args:
+        message (ChatMessage): The chat message to display.
+    """
     with st.chat_message(message.role.value):
         text = message.text
         if documents := message.documents:
-            text = replace_with_tooltips(text, documents)
+            text = replace_text_with_tooltips(text, documents)
         st.markdown(text, unsafe_allow_html=True)
 
 
-def ask_question(bot):
+def handle_user_question(bot):
+    """Handle the user's question input, get a response from the bot, and display both.
+
+    Args:
+        bot (SimpleRAGChatBot): The chatbot instance to get responses from.
+    """
     if question := st.chat_input("Ask a question"):
-        message = add_message_and_return(Role.USER, question)
-        _display_message(message)
+        user_message = add_message(Role.USER, question)
+        _display_message(user_message)
 
-        answer = bot.get_response(message, st.session_state.history)
-        message = add_message_and_return(Role.BOT, answer.text, answer.documents)
-        _display_message(message)
+        bot_response = bot.get_response(
+            user_message, st.session_state[ChatEnum.CHAT_HISTORY.value]
+        )
+        bot_message = add_message(Role.BOT, bot_response.text, bot_response.documents)
+        _display_message(bot_message)
 
 
-def chat(llm: None) -> None:
-    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+def chat_interface(llm: BaseChatModel) -> None:
+    """Main chat interface function to handle the chat logic.
+
+    Args:
+        llm (BaseChatModel): The language model to use for the chatbot.
+    """
+    logger.debug(f"Use {llm=}")
     if st.session_state[VectorStorEnum.CURRENT_VECTOR_STORE.value]:
         vector_store = create_vector_store(
             st.session_state[VectorStorEnum.CURRENT_VECTOR_STORE.value]
         )
         rag_bot = SimpleRAGChatBot(llm, vector_store)
         display_chat_history()
-        ask_question(rag_bot)
+        handle_user_question(rag_bot)
     else:
-        st.markdown("# Please provide vector store.")
+        st.warning("Empty Vector store, please first add a vector store.", icon="⚠️")
+        logger.warning("No vector store provided.")
