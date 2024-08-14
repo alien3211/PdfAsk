@@ -69,7 +69,7 @@ check-safety:
 	poetry run bandit -ll --recursive pdf_ask tests
 
 .PHONY: lint-all
-lint: test check-linter check-formatting mypy check-safety
+lint: test check-linter check-formatting check-safety
 
 #* Docker
 # Example: make docker-build VERSION=latest

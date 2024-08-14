@@ -31,12 +31,12 @@ def clean_text(input_string: str) -> str:
 
 
 def load_and_parse_document(
-    file_path: str, splitter: TextSplitter | None = None
+    file_path_str: str, splitter: TextSplitter | None = None
 ) -> list[Document]:
     """Load and parse a document from the given file path.
 
     Args:
-        file_path (str): The path to the document file.
+        file_path_str (str): The path to the document file.
         splitter (TextSplitter, optional): An optional text splitter.
 
     Returns:
@@ -45,7 +45,7 @@ def load_and_parse_document(
     Raises:
         ParseDocumentException: If the file type is not supported.
     """
-    file_path = Path(file_path)
+    file_path = Path(file_path_str)
     if loader := DOC_PARSER.get(file_path.suffix):
         raw_documents = loader(file_path.as_posix()).load()
         for document in raw_documents:
@@ -89,4 +89,4 @@ class LocalLoader:
         Returns:
             list[Document]: A list of parsed documents.
         """
-        return load_and_parse_document(file_path=file_path, splitter=self.splitter)
+        return load_and_parse_document(file_path_str=file_path, splitter=self.splitter)
