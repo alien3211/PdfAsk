@@ -2,140 +2,132 @@
 
 <div align="center">
 
-[![Build status](https://github.com/alan_tetich/pdf_ask/workflows/build/badge.svg?branch=master&event=push)](https://github.com/alan_tetich/pdf_ask/actions?query=workflow%3Abuild)
+[![Build status](https://github.com/alien3211/pdf_ask/workflows/build/badge.svg?branch=master&event=push)](https://github.com/alien3211/pdf_ask/actions?query=workflow%3Abuild)
 [![Python Version](https://img.shields.io/pypi/pyversions/pdf_ask.svg)](https://pypi.org/project/pdf_ask/)
-[![Dependencies Status](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen.svg)](https://github.com/alan_tetich/pdf_ask/pulls?utf8=%E2%9C%93&q=is%3Apr%20author%3Aapp%2Fdependabot)
+[![Dependencies Status](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen.svg)](https://github.com/alien3211/pdf_ask/pulls?utf8=%E2%9C%93&q=is%3Apr%20author%3Aapp%2Fdependabot)
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Security: bandit](https://img.shields.io/badge/security-bandit-green.svg)](https://github.com/PyCQA/bandit)
-[![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/alan_tetich/pdf_ask/blob/master/.pre-commit-config.yaml)
-[![Semantic Versions](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--versions-e10079.svg)](https://github.com/alan_tetich/pdf_ask/releases)
-[![License](https://img.shields.io/github/license/alan_tetich/pdf_ask)](https://github.com/alan_tetich/pdf_ask/blob/master/LICENSE)
-![Coverage Report](assets/images/coverage.svg)
+[![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/alien3211/pdf_ask/blob/master/.pre-commit-config.yaml)
+[![Semantic Versions](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--versions-e10079.svg)](https://github.com/alien3211/pdf_ask/releases)
+[![License](https://img.shields.io/github/license/alien3211/pdf_ask)](https://github.com/alien3211/pdf_ask/blob/master/LICENSE)
+
 
 Awesome `pdf_ask` is a Python cli/package created with https://github.com/TezRomacH/python-package-template
 
+
 </div>
 
-## Very first steps
+Description `pdf_ask` is a tool that allows you to interact with your documents. You can create your own vector stores based on the documents you upload, making it easy to group and create new knowledge areas for your bot. You can then ask questions about these documents. Currently, it supports only PDF and TXT files and uses models from OpenAI.
 
-### Initialize your code
+## 📦 Installation
 
-1. Initialize `git` inside your repo:
+### Locally 
 
-```bash
-cd pdf_ask && git init
+ - Install poetry
+```shell
+make poetry-download 
+# or 
+curl -sSL https://install.python-poetry.org | $(PYTHON) -
 ```
-
-2. If you don't have `Poetry` installed run:
-
-```bash
-make poetry-download
-```
-
-3. Initialize poetry and install `pre-commit` hooks:
-
-```bash
+ - Install dependencies
+```shell
 make install
-make pre-commit-install
+# or 
+poetry install --only=main --no-root --no-interaction
+```
+ - run app
+```shell
+streamlit run streamlit_app.py
 ```
 
-4. Run the codestyle:
+### With Docker
 
-```bash
-make codestyle
+ - build image
+```shell
+make docker-build IMAGE=streamlit_app VERSION=latest
+# or 
+docker build -t streamlit-app:latest -f docker/Dockerfile . --no-cache
+# or
+docker-compose build
 ```
-
-5. Upload initial code to GitHub:
-
-```bash
-git add .
-git commit -m ":tada: Initial commit"
-git branch -M main
-git remote add origin https://github.com/alan_tetich/pdf_ask.git
-git push -u origin main
+ - run container
+```shell
+docker run --rm -t -p 8501:8501 -v $(pwd)/resources:/app/resources -e OPENAI_API_KEY="sk-..." streamlit-app:latest 
+# or
 ```
+```
+# create .env file and OPENAI_API_KEY
+OPENAI_API_KEY=sk-...
+```
+then run  
+```shel
+docker-compose up
+```
+## 🚀 Usage
 
-### Set up bots
+### Open browser and type in address bar
+```shell
+http://localhost:8501/
+```
+![img_1.png](assets/images/img_1.png)
 
-- Set up [Dependabot](https://docs.github.com/en/github/administering-a-repository/enabling-and-disabling-version-updates#enabling-github-dependabot-version-updates) to ensure you have the latest dependencies.
-- Set up [Stale bot](https://github.com/apps/stale) for automatic issue closing.
+For starters, you need to add the resources you want to talk to.
+![img_2.png](assets/images/img_2.png)
 
-### Poetry
+![img_3.png](assets/images/img_3.png)
 
-Want to know more about Poetry? Check [its documentation](https://python-poetry.org/docs/).
+Then select your resource 
+![img_4.png](assets/images/img_4.png)
 
-<details>
-<summary>Details about Poetry</summary>
-<p>
+And how you can start! enjoy!
+![img_5.png](assets/images/img_5.png)
 
-Poetry's [commands](https://python-poetry.org/docs/cli/#commands) are very intuitive and easy to learn, like:
 
-- `poetry add numpy@latest`
-- `poetry run pytest`
-- `poetry publish --build`
+## TODO
+- [ ] Add support for more LLM(now only OpenAI)
+- [ ] Add better configuration and more option
+- [ ] Add support to switch between prompts 
+- [ ] Add modifying resource(now we could just add a new resource)
+- [ ] Add support for more embedding models
+- [ ] Add more split and clean up methods for resources
+- [ ] Add more RAG strategy(like reranking, using llm to get better query, etc.)
+- [ ] Add more prompt template
+- [ ] Move backend to REST server(like fastapi) to better flexibility and scalability 
+- [ ] Improve UI/UX
+- [ ] Add more tests
+- [ ] Add more documentation
 
-etc
-</p>
-</details>
 
-### Building and releasing your package
 
-Building a new version of the application contains steps:
-
-- Bump the version of your package `poetry version <version>`. You can pass the new version explicitly, or a rule such as `major`, `minor`, or `patch`. For more details, refer to the [Semantic Versions](https://semver.org/) standard.
-- Make a commit to `GitHub`.
-- Create a `GitHub release`.
-- And... publish 🙂 `poetry publish --build`
-
-## 🎯 What's next
-
-Well, that's up to you 💪🏻. I can only recommend the packages and articles that helped me.
-
-- [`Typer`](https://github.com/tiangolo/typer) is great for creating CLI applications.
-- [`Rich`](https://github.com/willmcgugan/rich) makes it easy to add beautiful formatting in the terminal.
-- [`Pydantic`](https://github.com/samuelcolvin/pydantic/) – data validation and settings management using Python type hinting.
-- [`Loguru`](https://github.com/Delgan/loguru) makes logging (stupidly) simple.
-- [`tqdm`](https://github.com/tqdm/tqdm) – fast, extensible progress bar for Python and CLI.
-- [`IceCream`](https://github.com/gruns/icecream) is a little library for sweet and creamy debugging.
-- [`orjson`](https://github.com/ijl/orjson) – ultra fast JSON parsing library.
-- [`Returns`](https://github.com/dry-python/returns) makes you function's output meaningful, typed, and safe!
-- [`Hydra`](https://github.com/facebookresearch/hydra) is a framework for elegantly configuring complex applications.
-- [`FastAPI`](https://github.com/tiangolo/fastapi) is a type-driven asynchronous web framework.
-
-Articles:
-
-- [Open Source Guides](https://opensource.guide/).
-- [A handy guide to financial support for open source](https://github.com/nayafia/lemonade-stand)
-- [GitHub Actions Documentation](https://help.github.com/en/actions).
-- Maybe you would like to add [gitmoji](https://gitmoji.carloscuesta.me/) to commit names. This is really funny. 😄
+---
 
 ## 🚀 Features
 
 ### Development features
 
 - Supports for `Python 3.9` and higher.
-- [`Poetry`](https://python-poetry.org/) as the dependencies manager. See configuration in [`pyproject.toml`](https://github.com/alan_tetich/pdf_ask/blob/master/pyproject.toml) and [`setup.cfg`](https://github.com/alan_tetich/pdf_ask/blob/master/setup.cfg).
+- [`Poetry`](https://python-poetry.org/) as the dependencies manager. See configuration in [`pyproject.toml`](https://github.com/alien3211/pdf_ask/blob/master/pyproject.toml) and [`setup.cfg`](https://github.com/alien3211/pdf_ask/blob/master/setup.cfg).
 - Automatic codestyle with [`black`](https://github.com/psf/black), [`isort`](https://github.com/timothycrosley/isort) and [`pyupgrade`](https://github.com/asottile/pyupgrade).
 - Ready-to-use [`pre-commit`](https://pre-commit.com/) hooks with code-formatting.
 - Type checks with [`mypy`](https://mypy.readthedocs.io); docstring checks with [`darglint`](https://github.com/terrencepreilly/darglint); security checks with [`safety`](https://github.com/pyupio/safety) and [`bandit`](https://github.com/PyCQA/bandit)
 - Testing with [`pytest`](https://docs.pytest.org/en/latest/).
-- Ready-to-use [`.editorconfig`](https://github.com/alan_tetich/pdf_ask/blob/master/.editorconfig), [`.dockerignore`](https://github.com/alan_tetich/pdf_ask/blob/master/.dockerignore), and [`.gitignore`](https://github.com/alan_tetich/pdf_ask/blob/master/.gitignore). You don't have to worry about those things.
+- Ready-to-use [`.editorconfig`](https://github.com/alien3211/pdf_ask/blob/master/.editorconfig), [`.dockerignore`](https://github.com/alien3211/pdf_ask/blob/master/.dockerignore), and [`.gitignore`](https://github.com/alien3211/pdf_ask/blob/master/.gitignore). You don't have to worry about those things.
 
 ### Deployment features
 
 - `GitHub` integration: issue and pr templates.
-- `Github Actions` with predefined [build workflow](https://github.com/alan_tetich/pdf_ask/blob/master/.github/workflows/build.yml) as the default CI/CD.
-- Everything is already set up for security checks, codestyle checks, code formatting, testing, linting, docker builds, etc with [`Makefile`](https://github.com/alan_tetich/pdf_ask/blob/master/Makefile#L89). More details in [makefile-usage](#makefile-usage).
-- [Dockerfile](https://github.com/alan_tetich/pdf_ask/blob/master/docker/Dockerfile) for your package.
+- `Github Actions` with predefined [build workflow](https://github.com/alien3211/pdf_ask/blob/master/.github/workflows/build.yml) as the default CI/CD.
+- Everything is already set up for security checks, codestyle checks, code formatting, testing, linting, docker builds, etc with [`Makefile`](https://github.com/alien3211/pdf_ask/blob/master/Makefile#L89). More details in [makefile-usage](#makefile-usage).
+- [Dockerfile](https://github.com/alien3211/pdf_ask/blob/master/docker/Dockerfile) for your package.
 - Always up-to-date dependencies with [`@dependabot`](https://dependabot.com/). You will only [enable it](https://docs.github.com/en/github/administering-a-repository/enabling-and-disabling-version-updates#enabling-github-dependabot-version-updates).
-- Automatic drafts of new releases with [`Release Drafter`](https://github.com/marketplace/actions/release-drafter). You may see the list of labels in [`release-drafter.yml`](https://github.com/alan_tetich/pdf_ask/blob/master/.github/release-drafter.yml). Works perfectly with [Semantic Versions](https://semver.org/) specification.
+- Automatic drafts of new releases with [`Release Drafter`](https://github.com/marketplace/actions/release-drafter). You may see the list of labels in [`release-drafter.yml`](https://github.com/alien3211/pdf_ask/blob/master/.github/release-drafter.yml). Works perfectly with [Semantic Versions](https://semver.org/) specification.
 
 ### Open source community features
 
-- Ready-to-use [Pull Requests templates](https://github.com/alan_tetich/pdf_ask/blob/master/.github/PULL_REQUEST_TEMPLATE.md) and several [Issue templates](https://github.com/alan_tetich/pdf_ask/tree/master/.github/ISSUE_TEMPLATE).
+- Ready-to-use [Pull Requests templates](https://github.com/alien3211/pdf_ask/blob/master/.github/PULL_REQUEST_TEMPLATE.md) and several [Issue templates](https://github.com/alien3211/pdf_ask/tree/master/.github/ISSUE_TEMPLATE).
 - Files such as: `LICENSE`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, and `SECURITY.md` are generated automatically.
-- [`Stale bot`](https://github.com/apps/stale) that closes abandoned issues after a period of inactivity. (You will only [need to setup free plan](https://github.com/marketplace/stale)). Configuration is [here](https://github.com/alan_tetich/pdf_ask/blob/master/.github/.stale.yml).
+- [`Stale bot`](https://github.com/apps/stale) that closes abandoned issues after a period of inactivity. (You will only [need to setup free plan](https://github.com/marketplace/stale)). Configuration is [here](https://github.com/alien3211/pdf_ask/blob/master/.github/.stale.yml).
 - [Semantic Versions](https://semver.org/) specification with [`Release Drafter`](https://github.com/marketplace/actions/release-drafter).
 
 ## Installation
@@ -154,7 +146,7 @@ poetry add pdf_ask
 
 ### Makefile usage
 
-[`Makefile`](https://github.com/alan_tetich/pdf_ask/blob/master/Makefile) contains a lot of functions for faster development.
+[`Makefile`](https://github.com/alien3211/pdf_ask/blob/master/Makefile) contains a lot of functions for faster development.
 
 <details>
 <summary>1. Download and remove Poetry</summary>
@@ -306,7 +298,7 @@ Remove docker image with
 make docker-remove
 ```
 
-More information [about docker](https://github.com/alan_tetich/pdf_ask/tree/master/docker).
+More information [about docker](https://github.com/alien3211/pdf_ask/tree/master/docker).
 
 </p>
 </details>
@@ -349,7 +341,7 @@ make cleanup
 
 ## 📈 Releases
 
-You can see the list of available releases on the [GitHub Releases](https://github.com/alan_tetich/pdf_ask/releases) page.
+You can see the list of available releases on the [GitHub Releases](https://github.com/alien3211/pdf_ask/releases) page.
 
 We follow [Semantic Versions](https://semver.org/) specification.
 
@@ -366,15 +358,15 @@ We use [`Release Drafter`](https://github.com/marketplace/actions/release-drafte
 |            `documentation`            |    📝 Documentation     |
 |            `dependencies`             | ⬆️ Dependencies updates |
 
-You can update it in [`release-drafter.yml`](https://github.com/alan_tetich/pdf_ask/blob/master/.github/release-drafter.yml).
+You can update it in [`release-drafter.yml`](https://github.com/alien3211/pdf_ask/blob/master/.github/release-drafter.yml).
 
 GitHub creates the `bug`, `enhancement`, and `documentation` labels for you. Dependabot creates the `dependencies` label. Create the remaining labels on the Issues tab of your GitHub repository, when you need them.
 
 ## 🛡 License
 
-[![License](https://img.shields.io/github/license/alan_tetich/pdf_ask)](https://github.com/alan_tetich/pdf_ask/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/alien3211/pdf_ask)](https://github.com/alien3211/pdf_ask/blob/master/LICENSE)
 
-This project is licensed under the terms of the `MIT` license. See [LICENSE](https://github.com/alan_tetich/pdf_ask/blob/master/LICENSE) for more details.
+This project is licensed under the terms of the `MIT` license. See [LICENSE](https://github.com/alien3211/pdf_ask/blob/master/LICENSE) for more details.
 
 ## 📃 Citation
 
@@ -385,7 +377,7 @@ This project is licensed under the terms of the `MIT` license. See [LICENSE](htt
   year = {2024},
   publisher = {GitHub},
   journal = {GitHub repository},
-  howpublished = {\url{https://github.com/alan_tetich/pdf_ask}}
+  howpublished = {\url{https://github.com/alien3211/pdf_ask}}
 }
 ```
 
