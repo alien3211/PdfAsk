@@ -82,6 +82,24 @@ Then select your resource
 
 And how you can start! enjoy!
 ![img_5.png](assets/images/img_5.png)
+
+
+## TODO
+- [ ] Add support for more LLM(now only OpenAI)
+- [ ] Add better configuration and more option
+- [ ] Add support to switch between prompts 
+- [ ] Add modifying resource(now we could just add a new resource)
+- [ ] Add support for more embedding models
+- [ ] Add more split and clean up methods for resources
+- [ ] Add more RAG strategy(like reranking, using llm to get better query, etc.)
+- [ ] Add more prompt template
+- [ ] Move backend to REST server(like fastapi) to better flexibility and scalability 
+- [ ] Improve UI/UX
+- [ ] Add more tests
+- [ ] Add more documentation
+
+
+
 ---
 
 ## 🚀 Features
