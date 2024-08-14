@@ -226,7 +226,7 @@ def display_documents_embedding():
                 key=DocumentsEnum.DOCUMENT_EMBEDDINGS_NAME.value,
             )
             st.selectbox(
-                "Model Name of the Instruct Embeddings",
+                "Text split strategy",
                 ALLOWED_SPLITTER,
                 key=DocumentsEnum.TEXT_SPLITER_NAME.value,
             )

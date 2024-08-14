@@ -11,7 +11,7 @@ services:
       - "8501:8501"
     env_file:
       - .env
-#    volumes:
-#      -
+    volumes:
+      - ./resources:/app/resources
     environment:
       - PYTHONUNBUFFERED=1

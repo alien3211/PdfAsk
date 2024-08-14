@@ -15,100 +15,74 @@
 
 Awesome `pdf_ask` is a Python cli/package created with https://github.com/TezRomacH/python-package-template
 
+
 </div>
 
-## Very first steps
+Description `pdf_ask` is a tool that allows you to interact with your documents. You can create your own vector stores based on the documents you upload, making it easy to group and create new knowledge areas for your bot. You can then ask questions about these documents. Currently, it supports only PDF and TXT files and uses models from OpenAI.
 
-### Initialize your code
+## 📦 Installation
 
-1. Initialize `git` inside your repo:
+### Locally 
 
-```bash
-cd pdf_ask && git init
+ - Install poetry
+```shell
+make poetry-download 
+# or 
+curl -sSL https://install.python-poetry.org | $(PYTHON) -
 ```
-
-2. If you don't have `Poetry` installed run:
-
-```bash
-make poetry-download
-```
-
-3. Initialize poetry and install `pre-commit` hooks:
-
-```bash
+ - Install dependencies
+```shell
 make install
-make pre-commit-install
+# or 
+poetry install --only=main --no-root --no-interaction
+```
+ - run app
+```shell
+streamlit run streamlit_app.py
 ```
 
-4. Run the codestyle:
+### With Docker
 
-```bash
-make codestyle
+ - build image
+```shell
+make docker-build IMAGE=streamlit_app VERSION=latest
+# or 
+docker build -t streamlit-app:latest -f docker/Dockerfile . --no-cache
+# or
+docker-compose build
 ```
-
-5. Upload initial code to GitHub:
-
-```bash
-git add .
-git commit -m ":tada: Initial commit"
-git branch -M main
-git remote add origin https://github.com/alien3211/pdf_ask.git
-git push -u origin main
+ - run container
+```shell
+docker run --rm -t -p 8501:8501 -v $(pwd)/resources:/app/resources -e OPENAI_API_KEY="sk-..." streamlit-app:latest 
+# or
 ```
+```
+# create .env file and OPENAI_API_KEY
+OPENAI_API_KEY=sk-...
+```
+then run  
+```shel
+docker-compose up
+```
+## 🚀 Usage
 
-### Set up bots
+### Open browser and type in address bar
+```shell
+http://localhost:8501/
+```
+![img_1.png](assets/images/img_1.png)
 
-- Set up [Dependabot](https://docs.github.com/en/github/administering-a-repository/enabling-and-disabling-version-updates#enabling-github-dependabot-version-updates) to ensure you have the latest dependencies.
-- Set up [Stale bot](https://github.com/apps/stale) for automatic issue closing.
+For starters, you need to add the resources you want to talk to.
+![img_2.png](assets/images/img_2.png)
 
-### Poetry
+![img_3.png](assets/images/img_3.png)
 
-Want to know more about Poetry? Check [its documentation](https://python-poetry.org/docs/).
+Then select your resource 
+![img_4.png](assets/images/img_4.png)
 
-<details>
-<summary>Details about Poetry</summary>
-<p>
-
-Poetry's [commands](https://python-poetry.org/docs/cli/#commands) are very intuitive and easy to learn, like:
-
-- `poetry add numpy@latest`
-- `poetry run pytest`
-- `poetry publish --build`
-
-etc
-</p>
-</details>
-
-### Building and releasing your package
-
-Building a new version of the application contains steps:
-
-- Bump the version of your package `poetry version <version>`. You can pass the new version explicitly, or a rule such as `major`, `minor`, or `patch`. For more details, refer to the [Semantic Versions](https://semver.org/) standard.
-- Make a commit to `GitHub`.
-- Create a `GitHub release`.
-- And... publish 🙂 `poetry publish --build`
-
-## 🎯 What's next
-
-Well, that's up to you 💪🏻. I can only recommend the packages and articles that helped me.
-
-- [`Typer`](https://github.com/tiangolo/typer) is great for creating CLI applications.
-- [`Rich`](https://github.com/willmcgugan/rich) makes it easy to add beautiful formatting in the terminal.
-- [`Pydantic`](https://github.com/samuelcolvin/pydantic/) – data validation and settings management using Python type hinting.
-- [`Loguru`](https://github.com/Delgan/loguru) makes logging (stupidly) simple.
-- [`tqdm`](https://github.com/tqdm/tqdm) – fast, extensible progress bar for Python and CLI.
-- [`IceCream`](https://github.com/gruns/icecream) is a little library for sweet and creamy debugging.
-- [`orjson`](https://github.com/ijl/orjson) – ultra fast JSON parsing library.
-- [`Returns`](https://github.com/dry-python/returns) makes you function's output meaningful, typed, and safe!
-- [`Hydra`](https://github.com/facebookresearch/hydra) is a framework for elegantly configuring complex applications.
-- [`FastAPI`](https://github.com/tiangolo/fastapi) is a type-driven asynchronous web framework.
-
-Articles:
-
-- [Open Source Guides](https://opensource.guide/).
-- [A handy guide to financial support for open source](https://github.com/nayafia/lemonade-stand)
-- [GitHub Actions Documentation](https://help.github.com/en/actions).
-- Maybe you would like to add [gitmoji](https://gitmoji.carloscuesta.me/) to commit names. This is really funny. 😄
+And how you can start! enjoy!
+![img_5.png](assets/images/img_5.png)
+---
 
 ## 🚀 Features
 
