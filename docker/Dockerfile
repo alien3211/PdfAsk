@@ -1,4 +1,4 @@
-FROM python:3.12-slim as base
+FROM python:3.13-slim as base
 ARG USERNAME=pdfask
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
